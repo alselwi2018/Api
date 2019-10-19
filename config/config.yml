@@ -1,0 +1,46 @@
+framework:
+  translator: ~
+
+fos_user:
+  db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+  firewall_name: main
+  user_class: App\Entity\User
+  from_email:
+    address: "%mailer_user%"
+    sender_name: "%mailer_user%"
+
+fos_rest:
+  routing_loader:
+    default_format: json
+    include_format: false
+  body_listener: true
+  format_listener:
+        rules:
+          - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false}
+  param_fetcher_listener: true
+  access_denied_listener:
+    json: true
+  view:
+      view_response_listener: 'force'
+      formats:
+        json: true
+
+swiftmailer:
+  transport: '%mailer_transport%'
+  host: '%mailer_host%'
+  username: '%mailer_user%'
+  password: '%mailer_password%'
+  spool: { type: memory }
+
+fos_oauth_server:
+    db_driver: orm
+    client_class:        App\Entity\Client
+    access_token_class:  App\Entity\AccessToken
+    refresh_token_class: App\Entity\RefreshToken
+    auth_code_class:     App\Entity\AuthCode
+    service:
+        user_provider: fos_user.user_provider.username
+        options:
+            access_token_lifetime: 86400
+            refresh_token_lifetime: 1209600
+            auth_code_lifetime: 30
